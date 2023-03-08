@@ -8,12 +8,20 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 
+import android.content.pm.PackageManager;
+import androidx.core.content.ContextCompat;
+import java.io.IOException;
+import org.quietmodem.Quiet.*;
+
 @ReactModule(name = TestQuietModule.NAME)
 public class TestQuietModule extends ReactContextBaseJavaModule {
   public static final String NAME = "TestQuiet";
 
+  private static FrameTransmitter transmitter = null;
+
   public TestQuietModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    this.reactContext = reactContext;
   }
 
   @Override
@@ -22,11 +30,46 @@ public class TestQuietModule extends ReactContextBaseJavaModule {
     return NAME;
   }
 
-
-  // Example method
-  // See https://reactnative.dev/docs/native-modules-android
   @ReactMethod
-  public void multiply(double a, double b, Promise promise) {
-    promise.resolve(a * b);
+  public final void start () {
+    FrameTransmitterConfig transmitterConfig = null;
+    final boolean hasPermission = ContextCompat.checkSelfPermission(this.reactContext, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    if (!hasPermission) {
+      System.out.println( "audio record is not permitted here!" );
+      return
+    }
+    try {
+      this.transmitterConfig = new FrameTransmitterConfig(
+          this,
+          "audible-7k-channel-0");
+      receiverConfig = new FrameReceiverConfig(
+          this,
+          "audible-7k-channel-0");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    try {
+        this.transmitter = new FrameTransmitter(transmitterConfig);
+    } catch (ModemException e) {
+        e.printStackTrace();
+    }
+
+  }
+
+  @ReactMethod
+  public final void send(final String pMessage) {
+    try {
+      if (this.transmitter != null) {
+        this.transmitter.send(pMessage.getBytes());
+      }
+    }  catch (final Exception pException) {
+      pException.printStackTrace();
+    }
+  }
+
+  @ReactMethod
+  public final void stop() {
+    this.transmitter = null;
   }
 }
