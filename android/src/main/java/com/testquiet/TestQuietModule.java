@@ -46,10 +46,9 @@ public class TestQuietModule extends ReactContextBaseJavaModule {
     try {
       this.transmitter = new FrameTransmitter(
         new FrameTransmitterConfig(
-        this.reactContext,
-        "audible-7k-channel-0")
+          this.reactContext,
+          "audible-7k-channel-0")
       );
-      this.transmitterConfig = ;
     } catch (IOException e) {
       e.printStackTrace();
     } catch (ModemException e) {
