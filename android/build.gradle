@@ -33,8 +33,8 @@ def getExtOrIntegerDefault(name) {
 android {
   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
 
+  namespace "com.testquiet"
   defaultConfig {
-    applicationId "com.testquiet"
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
